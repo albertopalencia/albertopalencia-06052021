@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+ 
+
+  <ItemGroup>
+    <Compile Remove="Views\General\**" />
+    <Content Remove="Views\General\**" />
+    <EmbeddedResource Remove="Views\General\**" />
+    <None Remove="Views\General\**" />
+  </ItemGroup> 
+
+  <ItemGroup>    
+    <PackageReference Include="ClosedXML" Version="0.94.2" />
+      <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup> 
+ 
+</Project>

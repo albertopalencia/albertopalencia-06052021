@@ -1,0 +1,339 @@
+﻿// ***********************************************************************
+// Assembly         : WebApp
+// Author           : Alberto Palencia
+// Created          : 04-29-2021
+//
+// Last Modified By : Alberto Palencia
+// Last Modified On : 04-13-2020
+// ***********************************************************************
+// <copyright file="Index.html" company="WebApp">
+    //     Copyright (c) AlbertPalencia. All rights reserved.
+    //
+</copyright>
+// <summary></summary>
+// ***********************************************************************
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pago por productividad</title>
+    <meta charset="utf-8">
+    <meta name="description" content="Pago por productividad">
+    <meta name="keywords" content="Pago por productividad">
+    <meta name="author" content="Jefferson Merchan">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+    <!--Constante-->
+    <div class="row">
+        <div class="col-sm-6">
+            <input id="txtConstante" type="text" class="form-control" placeholder="Agregar datos constantes"
+                   aria-describedby="btnLimpiar">
+        </div>
+        <div class="col-sm-1">
+            <button class="btn btn-success" type="button" id="btnInsertar">Insertar</button>
+        </div>
+        <div class="col-sm-1">
+            <div style="width: 100%;" class="text-left">
+                <button class="btn btn-warning" type="button" id="btnBorrar">Borrar</button>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div style="width: 100%;" class="text-right">
+                <button class="btn btn-danger" type="button" id="btnLimpiar">Limpiar</button>
+            </div>
+
+        </div>
+
+    </div>
+    <br />
+    <!--Filtros-->
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="btn-group" style="width: 100%">
+                <button class="btn btn-success mb-2 dropdown-toggle  btn-sm" type="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    Condición
+                </button>
+                <ul id="ddlCondicion" class="dropdown-menu">
+                    <li class="dropdown-item">Si</li>
+                    <li class="dropdown-item">Si No</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="btn-group" style="width: 100%">
+                <button class="btn btn-success mb-2 dropdown-toggle  btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Agrupación
+                </button>
+                <ul id="ddlLlaves" class="dropdown-menu">
+                    <li class="dropdown-item">(</li>
+                    <li class="dropdown-item">((</li>
+                    <li class="dropdown-item">(((</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="btn-group" style="width: 100%">
+                <select class="btn btn-success mb-2 dropdown-toggle  btn-sm" id="ddlvariables" style="width: 100%">
+                    <option value="0" disabled selected>Seleccionar variable</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="btn-group" style="width: 100%">
+                <button class="btn btn-success mb-2 dropdown-toggle  btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Lógico
+                </button>
+                <ul id="ddlLogistico" class="dropdown-menu">
+                    <li class="dropdown-item">Y</li>
+                    <li class="dropdown-item">O</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="btn-group" style="width: 100%">
+                <button class="btn btn-success mb-2 dropdown-toggle  btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Comparación
+                </button>
+                <ul id="ddlIgualacion" class="dropdown-menu">
+                    <li class="dropdown-item">=</li>
+                    <li class="dropdown-item"><</li>
+                    <li class="dropdown-item"><=</li>
+                    <li class="dropdown-item">></li>
+                    <li class="dropdown-item">>=</li>
+                    <li class="dropdown-item">NULL</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="btn-group" style="width: 100%">
+                <button class="btn btn-success mb-2  dropdown-toggle  btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Matemático
+                </button>
+                <ul id="ddlMatematico" class="dropdown-menu">
+                    <li class="dropdown-item">+</li>
+                    <li class="dropdown-item">-</li>
+                    <li class="dropdown-item">*</li>
+                    <li class="dropdown-item">/</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--Caja de texto-->
+    <div class="row">
+        <div class="col-sm-12">
+            <textarea id="txtFormula" style="width: 100%;" rows="5"></textarea>
+        </div>
+    </div>
+    <!--Limpiar-->
+
+    <input id="txtVariables" type="text" style="display: none;">
+</body>
+</html>
+
+<script>
+
+    // Asigna valores a las DDL variables
+    $(function () {
+        /// <summary>
+        /// </summary>
+        clearData();
+    });
+
+    // Pinta en el textarea
+    function equationPaint(data, key) {
+        /// <summary>
+        /// Equations the paint.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="key">The key.</param>
+        var formula = '';
+        var inicio = sessionStorage.getItem("inicio");
+        var final = sessionStorage.getItem("final");
+        debugger
+        if (inicio != "null" && inicio != null && final != "null" && final != null) {
+            if (key == 8 && data == '') {
+
+                var newInicio = inicio.substring(0, inicio.length - 1);
+                inicio = newInicio;
+                sessionStorage.setItem("inicio", inicio.substring(0, inicio.length))
+                formula = inicio + final
+            } else {
+                formula = inicio + data + final;
+            }
+
+
+        } else {
+
+            formula = data;
+        }
+        $('#txtFormula').val(formula);
+    }
+
+    // Direcciones, enter y borrar + Foco del string
+    $('#txtFormula').keydown(function (e) {
+        debugger
+        //BackSpace   =   8
+        //enter	    =   13
+        //space	    =   32
+        //arrow left	=   37
+        //arrow up	=   38
+        //arrow right	=   39
+        //arrow down	=   40
+        //delete	    =   46
+
+        if (e.keyCode == 8) {
+            debugger
+            e.preventDefault();
+        }
+
+        if (e.keyCode != 13 && e.keyCode != 32 && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40 && e.keyCode != 46 && e.keyCode != 8) {
+            e.preventDefault();
+        }
+    });
+
+
+
+    // Click, know index focus
+    $('#txtFormula').click(function (e) {
+
+        /// <summary>
+        /// </summary>
+        /// <param name="e">The e.</param>
+        var temp = $('#txtFormula').val();
+        var index = e.target.selectionStart;
+        sessionStorage.setItem("inicio", temp.substring(0, index));
+        sessionStorage.setItem("final", temp.substring(index, temp.length));
+    });
+
+    // Clear  data
+    $('#btnLimpiar').click(function () {
+        /// <summary>
+        /// </summary>
+        clearData();
+    });
+
+    $('#btnBorrar').click(function () {
+        /// <summary>
+        /// </summary>
+        equationPaint("", 8);
+    });
+
+    // Clear all data
+    function clearData() {
+        /// <summary>
+        /// Clears the data.
+        /// </summary>
+        $('#txtConstante').val(null);
+        $('#txtFormula').val(null);
+        $('#txtConstante').val('');
+        $('#txtFormula').val('');
+        sessionStorage.setItem("inicio", null);
+        sessionStorage.setItem("final", null);
+        sessionStorage.setItem("inicio", '');
+        sessionStorage.setItem("final", '');
+        // location.reload();
+    }
+
+    // Inserta datos constantes
+    $('#btnInsertar').click(function () {
+        /// <summary>
+        /// </summary>
+        equationPaint(' ' + $('#txtConstante').val() + ' ');
+    });
+
+    // Alfanumerico
+    $('input[id="txtConstante"]').bind('keypress', function (e) {
+        /// <summary>
+        /// </summary>
+        /// <param name="e">The e.</param>
+        var keyCode = (e.which) ? e.which : event.keyCode
+        return !(keyCode > 31 && (keyCode < 48 || keyCode > 90) && (keyCode < 97 || keyCode > 122));
+    });
+
+    //  DDL Condicion "If , If Else "
+    $('#ddlCondicion li').on('click', function () {
+        /// <summary>
+        /// </summary>
+        var event = $(this).text();
+        if (event == 'Si') {
+            event = " [Si] (  ) \n  [INICIO] \n \n  [FIN]";
+        } else {
+            event = " [Si] (  ) \n  [INICIO] \n \n  [FIN] \n [SI_NO]  \n   [INICIO] \n \n  [FIN]";
+        }
+        equationPaint(event);
+    });
+
+    // DLL Llaves " (, ((, ((( "
+    $('#ddlLlaves li').on('click', function () {
+        /// <summary>
+        /// </summary>
+        var event = $(this).text();
+        switch (event) {
+            case '(':
+                event = ' (  ) ';
+                break;
+            case '((':
+                event = ' ((  )) ';
+                break;
+            case '(((':
+                event = ' (((  ))) ';
+                break;
+            default:
+                event = '';
+        }
+        equationPaint(event);
+    });
+
+    // DDL Variables { }
+    $("select#ddlvariables").change(function () {
+        /// <summary>
+        /// </summary>
+        var e = document.getElementById("ddlvariables");
+        var result = e.options[e.selectedIndex].text;
+        equationPaint(' {' + result + '} ');
+    });
+
+    //  DDL Logico " Y, O "
+    $('#ddlLogistico li').on('click', function () {
+        /// <summary>
+        /// </summary>
+        var event = $(this).text();
+        switch (event) {
+            case 'Y':
+                event = ' [Y] ';
+                break;
+            case 'O':
+                event = ' [O] ';
+                break;
+            default:
+                event = '';
+        }
+        equationPaint(event);
+    });
+
+    // DDL Igualacion " =,<,> "
+    $('#ddlIgualacion li').on('click', function () {
+        /// <summary>
+        /// </summary>
+        equationPaint(' ' + $(this).text() + ' ');
+    });
+
+    // DLL Matematico " +,-,*,/ "
+    $('#ddlMatematico li').on('click', function () {
+        /// <summary>
+        /// </summary>
+        equationPaint(' ' + $(this).text() + ' ');
+    });
+
+
+
+</script>

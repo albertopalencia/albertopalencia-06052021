@@ -1,0 +1,6 @@
+﻿.select-multiple-custom {
+    overflow-y: scroll;
+    height: auto;
+    max-height:101px;
+    padding-bottom:10px;
+}

@@ -1,0 +1,321 @@
+﻿<script>
+
+    (function ($) {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="$">The $.</param>
+        namespace = {
+
+            inicio: function () {
+
+                /// <summary>
+                /// 
+                /// </summary>
+                $('#divdetalleextraccion').show();
+                utilidades.ExtendjQuery();
+                utilidades.validarForm('#frmconsultaalbum');
+                utilidades.iniciarValidacion();
+
+                $(document).ajaxStart(function () {
+                    /// <summary>
+                    /// 
+                    /// </summary>
+                    $('#divProgress').show();
+                });
+                $(document).ajaxStop(function () {
+                    /// <summary>
+                    /// 
+                    /// </summary>
+                    $('#divProgress').hide();
+                });
+
+                album.cargarSelect();
+                album.eventos();
+
+            }
+
+            , cargarSelect: function () {
+                /// <summary>
+                /// 
+                /// </summary>
+                listaDesplegable.obtenerAlbums();
+            },
+
+            eventos: function () {
+
+                /// <summary>
+                /// 
+                /// </summary>
+                $('#btnlimpiar').click(function (e) {
+                    /// <summary>
+                    /// 
+                    /// </summary>
+                    /// <param name="e">The e.</param>
+                    e.preventDefault();
+                    utilidades.LimpiarControles('#frmconsultar');
+                });
+
+                $('#btnconsultaAlbum').click(function (e) {
+                    /// <summary>
+                    /// 
+                    /// </summary>
+                    /// <param name="e">The e.</param>
+                    e.preventDefault();
+                    if (utilidades.validar($(this))) {
+                        consultaInformacion.listarFotos();
+                    }
+                });
+            }
+
+        };
+
+        window.album = namespace;
+    })(this.jQuery);
+
+    (function ($) {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="$">The $.</param>
+        namespaceSelect = {
+
+            obtenerAlbums: function () {
+
+                /// <summary>
+                /// 
+                /// </summary>
+                $.ajax({
+                    url: window.api + 'albums',
+                    type: 'GET',
+                    async: true,
+                    cache: false
+                }).success(function (data) {
+                    /// <summary>
+                    /// 
+                    /// </summary>
+                    /// <param name="data">The data.</param>
+                    if (data) {
+                        var items = "";
+                        $.each(data, function (i, item) {
+                            /// <summary>
+                            /// 
+                            /// </summary>
+                            /// <param name="i">The i.</param>
+                            /// <param name="item">The item.</param>
+                            items += "<option value=\"" + item.id + "\">" + item.title + "</option>";
+                        });
+
+                        $('#albumSelect').html(items);
+                        if ($('#albumSelect').hasClass('select2-offscreen')) {
+                            $('#albumSelect').select2('val', '');
+                        }
+                    } else {
+                        mostrarMensaje('Alerta', data.Error);
+                    }
+                }).error(function (xhr, status) {
+                    /// <summary>
+                    /// 
+                    /// </summary>
+                    /// <param name="xhr">The XHR.</param>
+                    /// <param name="status">The status.</param>
+                    alert(xhr.responseText);
+                });
+
+            }
+        };
+        window.listaDesplegable = namespaceSelect;
+    })(this.jQuery);
+
+    (function ($) {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="$">The $.</param>
+        namespace = {
+
+            listarFotos: function () {
+
+                /// <summary>
+                /// 
+                /// </summary>
+                var albumId = $('#albumSelect').val();
+                $.ajax({
+                    url: window.api + 'albums/' + albumId + '/photos/',
+                    type: 'get',
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (datos) {
+                        /// <summary>
+                        /// 
+                        /// </summary>
+                        /// <param name="datos">The datos.</param>
+                        if (datos) {
+                            consultaInformacion.grillaFotos(datos);
+                        }
+                    },
+                    error: function (jqxhr, textStatus, error) {
+                        /// <summary>
+                        /// 
+                        /// </summary>
+                        /// <param name="jqxhr">The JQXHR.</param>
+                        /// <param name="textStatus">The text status.</param>
+                        /// <param name="error">The error.</param>
+                        mostrarMensaje('Alerta', "Error al consultar las fotos por el album id: " + id);
+                    }
+                });
+            },
+
+            grillaFotos: function (entidad) {
+
+                /// <summary>
+                /// 
+                /// </summary>
+                /// <param name="entidad">The entidad.</param>
+                console.log(entidad);
+
+                $('#gvfotos').html('');
+
+                $("#gvfotos").kendoGrid({
+                    dataSource: {
+                        type: "json",
+                        data: entidad,
+                        pageSize: 10
+                    },
+                    sortable: true,
+                    pageable: {
+                        input: false,
+                        numeric: true,
+                        pageSizes: [10, 20, 50, 100],
+                        previousNext: true
+                    },
+
+                    scrollable: true,
+                    filterable: true,
+                    resizable: true,
+                    columns: [
+                        {
+                            field: "id",
+                            title: "#",
+                            hidden: true,
+                            width: 0
+                        },
+                        {
+                            field: "title",
+                            title: "Titulo",
+                            width: 50
+                        },
+                        {
+                            field: "url",
+                            title: "Url",
+                            width: 30,
+                            template: function (dataItem) {
+                                /// <summary>
+                                /// 
+                                /// </summary>
+                                /// <param name="dataItem">The data item.</param>
+                                return '<img style="cursor:pointer"  value=' + dataItem.id + ' src = ' + dataItem.thumbnailUrl + ' class="img-rounded" />';
+                            }
+                        },
+                        {
+                            width: 20,
+                            command: [
+                                {
+                                    name: "seach", text: "Ver Comentarios",
+                                    template: "<a id='vercomentarios' class='k-grid-Search' style='cursor:pointer' >Ver Comentarios<span class=''></span ></a>"
+                                }
+                            ]
+                        }
+
+                    ],
+                    dataBound: function () {
+                        /// <summary>
+                        /// 
+                        /// </summary>
+                        utilidades.CambiarIconosGrilla();
+                        var $grid = $(this.element[0]),
+                            newWidth = $grid.find('.k-grid-content').width() - 10;
+                        $grid.find('.k-grid-header-wrap > table, .k-grid-content > table').css('width', newWidth);
+                    }
+
+                });
+            }
+
+            , cargarComentarios: function () {
+                
+                /// <summary>
+                /// 
+                /// </summary>
+                $.ajax({
+                    url: window.api + 'comments',
+                    type: 'get',
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (datos) {
+                        /// <summary>
+                        /// 
+                        /// </summary>
+                        /// <param name="datos">The datos.</param>
+                        if (datos) {
+                            consultaInformacion.grillaComentarios(datos);
+                          
+                        } else {
+                            mostrarMensaje('Alerta', datos.Error);
+                        }
+                    },
+                    error: function (jqxhr, textStatus, error) {
+                        /// <summary>
+                        /// 
+                        /// </summary>
+                        /// <param name="jqxhr">The JQXHR.</param>
+                        /// <param name="textStatus">The text status.</param>
+                        /// <param name="error">The error.</param>
+                        mostrarMensaje('Alerta', "Error al consultar los comentarios");
+                    }
+                });
+            }
+
+            , grillaComentarios: function (entidad) {
+
+                /// <summary>
+                /// 
+                /// </summary>
+                /// <param name="entidad">The entidad.</param>
+                $('#gvComentarios').html('');
+
+                $("#gvComentarios").kendoGrid({
+                    dataSource: {
+                        type: "json",
+                        data: entidad,
+                        pageSize: 10
+                    },
+                    sortable: true,
+                    pageable: {
+                        input: false,
+                        numeric: true,
+                        pageSizes: [10, 20, 50, 100],
+                        previousNext: true
+                    },
+                    scrollable: true,
+                    filterable: true,
+                    resizable: true,
+                    columns: [
+
+                        {
+                            field: "name",
+                            title: "comentario",
+                            width: 800,
+                            filter: false
+                        }
+                    ]
+                });
+            }
+
+        }
+
+        window.consultaInformacion = namespace;
+    })(this.jQuery);
+</script>

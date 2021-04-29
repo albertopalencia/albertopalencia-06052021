@@ -1,0 +1,46 @@
+﻿<div class="page-header">
+    <h4>
+        Prueba Tecnica - Alberto Palencia Benedetti
+    </h4>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 widget-container-col ui-sortable" id="widget-container-col-12">
+        <div class="widget-box ui-sortable-handle" id="widget-box-10">
+            <div class="widget-header widget-header-small">
+                <h5 class="widget-title smaller"></h5>
+
+                <div class="widget-toolbar no-border">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a data-toggle="tab" href="#tabAlbum">Consultar Albums</a>
+                        </li> 
+                    </ul>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main padding-6">
+                    <div class="tab-content">
+                        <div id="tabAlbum" class="tab-pane in active">
+                            <partial name="_ListaAlbums" />
+                        </div> 
+                    </div>
+                  
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<partial name="_Scripts" />
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            album.inicio();
+        });
+    </script>
+}
